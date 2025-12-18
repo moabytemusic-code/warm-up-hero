@@ -153,7 +153,7 @@ async function handleCheckRequest(req: Request) {
                             await connection.addFlags(uid, ['\\Seen', '\\Flagged']);
 
                             // 2. Move to INBOX
-                            await connection.moveMessage(uid, 'INBOX');
+                            await connection.moveMessage(uid as any, 'INBOX');
 
                             // 3. Extract Info for Reply
                             const headerPart = message.parts.find((p: any) => p.which === 'HEADER');
