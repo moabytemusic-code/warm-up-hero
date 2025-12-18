@@ -52,7 +52,7 @@ export function ConnectAccountForm() {
     type FormValues = z.infer<typeof formSchema>
 
     const form = useForm<FormValues>({
-        resolver: zodResolver(formSchema),
+        resolver: zodResolver(formSchema) as any,
         defaultValues: {
             name: '',
             email: '',
