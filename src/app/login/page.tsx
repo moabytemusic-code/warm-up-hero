@@ -46,7 +46,7 @@ export default function Login() {
                                 container: 'gap-4'
                             }
                         }}
-                        providers={['github', 'google']}
+                        providers={[]}
                         redirectTo={`${typeof window !== 'undefined' ? window.location.origin : ''}/auth/callback`}
                         theme="dark" // or light based on context, forcing dark for now as simpler
                     />
