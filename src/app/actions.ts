@@ -292,3 +292,32 @@ function getMockDashboardStats(): DashboardStats {
         ]
     };
 }
+
+export interface EmailAccount {
+    id: string;
+    email_address: string;
+    daily_limit: number;
+    current_warmup_score: number;
+    created_at: string;
+    // We might not have a status status column yet, so we'll simulate or ignore for now
+    // status: 'active' | 'paused' | 'error'; 
+}
+
+export async function getConnectedAccounts(): Promise<EmailAccount[]> {
+    try {
+        const { data: accounts, error } = await supabase
+            .from('email_accounts')
+            .select('id, email_address, daily_limit, current_warmup_score, created_at')
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            console.error('Error fetching accounts:', error);
+            return [];
+        }
+
+        return accounts as EmailAccount[];
+    } catch (e) {
+        console.error('Unexpected error fetching accounts:', e);
+        return [];
+    }
+}
