@@ -3,7 +3,7 @@
 import { createTransport } from 'nodemailer';
 import imaps from 'imap-simple';
 import { encrypt } from '@/utils/encryption';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/utils/supabase/server';
 
 export interface ConnectAccountState {
     message?: string;
@@ -12,6 +12,8 @@ export interface ConnectAccountState {
 }
 
 export async function connectAccount(prevState: ConnectAccountState, formData: FormData): Promise<ConnectAccountState> {
+
+    const supabase = await createClient();
 
     const email = formData.get('email') as string;
     const smtpHost = formData.get('smtpHost') as string;
@@ -65,33 +67,36 @@ export async function connectAccount(prevState: ConnectAccountState, formData: F
         // 3. Encrypt Password
         const { encryptedData, iv } = encrypt(password);
 
-        // 4. Get or Create User and Enforce Limits
-        let userId;
+
+        const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+
+        if (authError || !authUser) {
+            throw new Error('Unauthorized: Please log in.');
+        }
+
+        const userId = authUser.id;
+
+        // Check if user has a profile in 'users' table (created via trigger usually, or we create now)
+        // For MVP, we'll assume triggers or manual check.
+        // Let's safe-check and create if missing (although usually auth hooks do this)
+        const { data: userProfile, error: profileError } = await supabase.from('users').select('subscription_status').eq('id', userId).single();
+
         let subscriptionStatus = 'free';
 
-        const { data: users, error: fetchError } = await supabase.from('users').select('id, subscription_status').limit(1);
-
-        if (fetchError) {
-            console.error('Error fetching users:', fetchError);
-            throw new Error('Database connection failed');
-        }
-
-        if (users && users.length > 0) {
-            userId = users[0].id;
-            subscriptionStatus = users[0].subscription_status || 'free';
-        } else {
-            const { data: newUser, error: createError } = await supabase.from('users').insert({
-                email: 'demo@warmuphero.com', // Default demo email
+        if (!userProfile) {
+            // Create profile on the fly if missing (e.g. first login)
+            const { error: createError } = await supabase.from('users').insert({
+                id: userId,
+                email: authUser.email,
                 subscription_status: 'free'
-            }).select().single();
-
-            if (createError) {
-                console.error('Error creating user:', createError);
-                throw new Error('Failed to create user account');
+            });
+            if (createError && createError.code !== '23505') { // Ignore duplicate key error
+                console.error("Error creating user profile", createError);
             }
-            userId = newUser.id;
-            subscriptionStatus = 'free';
+        } else {
+            subscriptionStatus = userProfile.subscription_status || 'free';
         }
+
 
         // --- ENFORCE LIMITS ---
         const { count: currentAccountCount } = await supabase
@@ -167,6 +172,7 @@ export interface DashboardStats {
 }
 
 export async function getDashboardStats(): Promise<DashboardStats> {
+    const supabase = await createClient();
     try {
         // 1. Fetch Logs
         const today = new Date();
@@ -304,6 +310,7 @@ export interface EmailAccount {
 }
 
 export async function getConnectedAccounts(): Promise<EmailAccount[]> {
+    const supabase = await createClient();
     try {
         const { data: accounts, error } = await supabase
             .from('email_accounts')
