@@ -82,9 +82,11 @@
 }
 
 .dark {
-  --background: oklch(0.10 0 0); /* slightly darker for premium feel */
+  --background: oklch(0.10 0 0);
+  /* slightly darker for premium feel */
   --foreground: oklch(0.985 0 0);
-  --card: oklch(0.12 0 0); /* distinct from background */
+  --card: oklch(0.12 0 0);
+  /* distinct from background */
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.12 0 0);
   --popover-foreground: oklch(0.985 0 0);
@@ -119,17 +121,17 @@
   .glass {
     @apply backdrop-blur-md bg-white/70 dark:bg-black/40 border border-white/20 dark:border-white/10;
   }
-  
+
   .bg-grid-pattern {
-    background-image: linear-gradient(to right, rgba(0,0,0,0.05) 1px, transparent 1px),
-                      linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px);
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
     background-size: 24px 24px;
-    mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+    mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
   }
-  
+
   .dark .bg-grid-pattern {
-    background-image: linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
-                      linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
   }
 }
 
@@ -137,6 +139,7 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
