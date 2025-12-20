@@ -219,7 +219,7 @@ export default async function LandingPage() {
                     <CheckCircle2 className="w-4 h-4 text-orange-500 mr-2" /> Advanced Analytics
                   </li>
                 </ul>
-                <Link href="/login">
+                <Link href="/billing">
                   <Button className="w-full rounded-xl bg-orange-600 hover:bg-orange-700 text-white border-none">Get Started</Button>
                 </Link>
               </div>
