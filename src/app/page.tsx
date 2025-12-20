@@ -1,137 +1,169 @@
+
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Sparkles, PlusCircle } from 'lucide-react'
-import { ConnectAccountForm } from '@/components/dashboard/connect-account-form'
-import { DashboardOverview } from '@/components/dashboard/overview'
-import { DebugActions } from '@/components/dashboard/debug-actions'
-import { AccountList } from '@/components/dashboard/account-list'
-import { HowItWorks } from '@/components/dashboard/how-it-works'
-import { getDashboardStats, getConnectedAccounts } from '@/app/actions'
+import { ArrowRight, CheckCircle2, Shield, Zap, Mail } from 'lucide-react'
+import { createClient } from '@/utils/supabase/server'
+import { redirect } from 'next/navigation'
 
 export const dynamic = 'force-dynamic';
 
-export default async function Home() {
-  const [stats, accounts] = await Promise.all([
-    getDashboardStats(),
-    getConnectedAccounts()
-  ]);
+export default async function LandingPage() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
 
-  const hasAccounts = accounts.length > 0;
+  if (user) {
+    redirect('/dashboard')
+  }
 
   return (
-    <main className="min-h-screen bg-zinc-50 dark:bg-black font-sans bg-grid-pattern relative overflow-x-hidden">
+    <div className="min-h-screen bg-zinc-50 dark:bg-black font-sans bg-grid-pattern relative overflow-x-hidden flex flex-col">
 
       {/* Decorative gradient blob */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-orange-500/10 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-orange-500/10 blur-[130px] rounded-full pointer-events-none" />
 
-      {/* Navigation / Header */}
-      <nav className="border-b border-black/5 dark:border-white/5 bg-white/70 dark:bg-black/40 backdrop-blur-xl sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2.5 group cursor-default">
-            <div className="relative w-8 h-8 rounded-lg overflow-hidden shadow-lg shadow-orange-500/20 transition-transform duration-300 group-hover:scale-105">
+      {/* Header */}
+      <header className="fixed top-0 w-full z-50 border-b border-white/10 bg-white/70 dark:bg-black/40 backdrop-blur-xl">
+        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="relative w-9 h-9 rounded-xl overflow-hidden shadow-lg shadow-orange-500/20">
               <div className="absolute inset-0 bg-gradient-to-tr from-orange-500 to-red-600" />
-              <div className="absolute inset-0 flex items-center justify-center text-white font-bold text-lg">W</div>
+              <div className="absolute inset-0 flex items-center justify-center text-white font-bold text-xl">W</div>
             </div>
-            <span className="font-bold text-lg tracking-tight text-zinc-900 dark:text-zinc-100">WarmUpHero</span>
+            <span className="font-bold text-xl tracking-tight text-zinc-900 dark:text-zinc-100">WarmUpHero</span>
           </div>
-
-          <div className="flex items-center gap-2 md:gap-4">
-            <HowItWorks />
-            <Link href="/billing">
-              <Button variant="outline" size="sm" className="hidden md:flex border-orange-200/50 bg-orange-50/50 hover:bg-orange-100 hover:border-orange-300 text-orange-700 dark:border-orange-900/30 dark:bg-orange-900/10 dark:text-orange-400 dark:hover:bg-orange-900/20 transition-all duration-300 shadow-sm">
-                <Sparkles className="w-3.5 h-3.5 mr-2" />
-                Upgrade Plan
+          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-zinc-600 dark:text-zinc-400">
+            <Link href="#features" className="hover:text-orange-600 dark:hover:text-orange-400 transition-colors">Features</Link>
+            <Link href="#pricing" className="hover:text-orange-600 dark:hover:text-orange-400 transition-colors">Pricing</Link>
+            <Link href="#login" className="hover:text-orange-600 dark:hover:text-orange-400 transition-colors">How it works</Link>
+          </nav>
+          <div className="flex items-center gap-4">
+            <Link href="/login">
+              <Button variant="ghost" className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100">
+                Log in
               </Button>
             </Link>
-            <div className="w-8 h-8 rounded-full bg-zinc-200 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 overflow-hidden ring-2 ring-transparent hover:ring-orange-500/20 transition-all cursor-pointer">
-              <img src={`https://api.dicebear.com/7.x/notionists/svg?seed=KD`} alt="User" className="w-full h-full" />
-            </div>
+            <Link href="/login">
+              <Button className="bg-orange-600 hover:bg-orange-700 text-white rounded-full px-6 shadow-lg shadow-orange-600/20">
+                Get Started
+              </Button>
+            </Link>
           </div>
         </div>
-      </nav>
+      </header>
 
-      <div className="max-w-6xl mx-auto p-6 space-y-10 relative z-10">
-
-        {/* Welcome Section (Only if no accounts) */}
-        {!hasAccounts && (
-          <div className="text-center py-20 animate-in fade-in slide-in-from-bottom-8 duration-700">
-            <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50 mb-6 drop-shadow-sm">
-              Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-600">WarmUpHero</span>
-            </h1>
-            <p className="text-lg md:text-xl text-zinc-500 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed">
-              Connect your email accounts to start warming them up automatically. Increase your deliverability and stop landing in spam.
-            </p>
+      <main className="flex-grow pt-32">
+        {/* Hero Section */}
+        <section className="relative z-10 max-w-7xl mx-auto px-6 text-center lg:py-24 py-16">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 text-xs font-medium mb-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
+            </span>
+            New: Automated smart warming is live
           </div>
-        )}
 
-        {/* Dashboard Overview */}
-        {hasAccounts && (
-          <section className="space-y-4">
-            <div className="flex items-center justify-between px-1">
-              <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100 tracking-tight">Overview</h2>
-              <span className="text-xs font-medium text-zinc-400 bg-zinc-100 dark:bg-zinc-800/50 px-2 py-1 rounded-full border border-black/5 dark:border-white/5">
-                Last updated just now
-              </span>
+          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50 mb-8 max-w-4xl mx-auto leading-tight animate-in fade-in slide-in-from-bottom-6 duration-700">
+            Stop landing in <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-600">Spam</span>. <br />
+            Start hitting the Inbox.
+          </h1>
+
+          <p className="text-xl text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto mb-12 leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
+            WarmUpHero automatically improves your email deliverability using a peer-to-peer network of real inboxes. Recover your reputation in days, not months.
+          </p>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-in fade-in slide-in-from-bottom-10 duration-700 delay-200">
+            <Link href="/login">
+              <Button size="lg" className="h-14 px-8 text-lg rounded-full bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-all font-semibold shadow-xl shadow-orange-500/10 hover:shadow-orange-500/20">
+                Start Warming for Free <ArrowRight className="ml-2 w-5 h-5" />
+              </Button>
+            </Link>
+            <p className="text-sm text-zinc-500 mt-4 sm:mt-0">No credit card required</p>
+          </div>
+
+          {/* Stats / Social Proof */}
+          <div className="mt-20 pt-10 border-t border-zinc-200 dark:border-white/10 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300">
+            <div className="space-y-1">
+              <h4 className="text-3xl font-bold text-zinc-900 dark:text-white">99%</h4>
+              <p className="text-sm text-zinc-500 font-medium uppercase tracking-wider">Inbox Rate</p>
             </div>
-            <DashboardOverview stats={stats} />
-          </section>
-        )}
+            <div className="space-y-1">
+              <h4 className="text-3xl font-bold text-zinc-900 dark:text-white">10k+</h4>
+              <p className="text-sm text-zinc-500 font-medium uppercase tracking-wider">Real Inboxes</p>
+            </div>
+            <div className="space-y-1">
+              <h4 className="text-3xl font-bold text-zinc-900 dark:text-white">24/7</h4>
+              <p className="text-sm text-zinc-500 font-medium uppercase tracking-wider">Auto-Warming</p>
+            </div>
+            <div className="space-y-1">
+              <h4 className="text-3xl font-bold text-zinc-900 dark:text-white">0%</h4>
+              <p className="text-sm text-zinc-500 font-medium uppercase tracking-wider">Effort</p>
+            </div>
+          </div>
+        </section>
 
-        {/* Accounts Section */}
-        <section className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-
-          {/* Left Col: Accounts List */}
-          <div className="lg:col-span-2 space-y-6">
-            <div className="flex items-center justify-between px-1">
-              <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100 tracking-tight">Accounts</h2>
+        {/* Features Grid */}
+        <section id="features" className="py-24 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm border-y border-zinc-200 dark:border-white/5">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold text-zinc-900 dark:text-white mb-4">Everything you need to fix your reputation</h2>
+              <p className="text-lg text-zinc-500 max-w-2xl mx-auto">We replicate human behavior to signal trust to email providers like Gmail, Outlook, and Yahoo.</p>
             </div>
 
-            {hasAccounts ? (
-              <AccountList accounts={accounts} />
-            ) : (
-              // Empty State Card
-              <div className="relative group overflow-hidden rounded-xl border border-dashed border-zinc-300 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/20 p-12 text-center space-y-4 transition-colors hover:bg-zinc-50/80 dark:hover:bg-zinc-900/40">
-                <div className="mx-auto w-16 h-16 bg-zinc-100 dark:bg-zinc-800 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                  <PlusCircle className="w-8 h-8 text-zinc-400 dark:text-zinc-500" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">No accounts connected</h3>
-                  <p className="text-zinc-500 dark:text-zinc-400 mt-2 max-w-md mx-auto">
-                    Connect your first email account using the form to join the network and boost your reputation.
+            <div className="grid md:grid-cols-3 gap-8">
+              {[
+                {
+                  icon: <Mail className="w-8 h-8 text-blue-500" />,
+                  title: "Smart Conversations",
+                  desc: "Our AI generates realistic email threads between your account and our network, mimicking real business communication."
+                },
+                {
+                  icon: <Shield className="w-8 h-8 text-green-500" />,
+                  title: "Spam Rescue",
+                  desc: "When your emails land in spam, our agents automatically find them, mark them as 'Not Spam', and move them to the inbox."
+                },
+                {
+                  icon: <Zap className="w-8 h-8 text-orange-500" />,
+                  title: "Reputation Monitoring",
+                  desc: "Track your domain health score in real-time. Know exactly when you are ready to launch your cold outreach campaigns."
+                }
+              ].map((feature, i) => (
+                <div key={i} className="bg-white dark:bg-black p-8 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="mb-6 p-3 bg-zinc-50 dark:bg-zinc-900 rounded-lg w-fit">
+                    {feature.icon}
+                  </div>
+                  <h3 className="text-xl font-semibold text-zinc-900 dark:text-white mb-3">{feature.title}</h3>
+                  <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                    {feature.desc}
                   </p>
                 </div>
-              </div>
-            )}
-          </div>
-
-          {/* Right Col: Connect Form */}
-          <div className="space-y-6 sticky top-24">
-            <div className="flex items-center justify-between px-1">
-              <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100 tracking-tight">
-                {hasAccounts ? 'Add Another Account' : 'Connect Account'}
-              </h2>
+              ))}
             </div>
-            <div className="glass rounded-xl shadow-xl shadow-black/5 overflow-hidden">
-              {/* Decorative top strip */}
-              <div className="h-1 w-full bg-gradient-to-r from-orange-400 to-red-500" />
-              <div className="p-6">
-                <ConnectAccountForm />
-              </div>
-            </div>
-
-            {/* Debug Actions (Hidden behind details for cleanliness) */}
-            <details className="group">
-              <summary className="flex items-center gap-2 cursor-pointer text-xs font-medium text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 select-none transition-colors px-1">
-                <span>Developer Tools</span>
-              </summary>
-              <div className="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-800 animate-in fade-in slide-in-from-top-2">
-                <DebugActions />
-              </div>
-            </details>
           </div>
-
         </section>
-      </div>
-    </main>
+
+        {/* CTA Section */}
+        <section className="py-24 relative overflow-hidden">
+          <div className="max-w-5xl mx-auto px-6 text-center relative z-10">
+            <h2 className="text-4xl md:text-5xl font-bold text-zinc-900 dark:text-white mb-8">Ready to fix your email deliverability?</h2>
+            <Link href="/login">
+              <Button size="lg" className="h-16 px-10 text-xl rounded-full bg-gradient-to-r from-orange-500 to-red-600 text-white hover:opacity-90 transition-opacity shadow-2xl shadow-orange-500/30 border-none">
+                Get Started Now
+              </Button>
+            </Link>
+          </div>
+        </section>
+
+      </main>
+
+      <footer className="py-12 border-t border-zinc-200 dark:border-white/5 bg-zinc-50 dark:bg-black text-center text-sm text-zinc-500">
+        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+          <p>© 2024 WarmUpHero. All rights reserved.</p>
+          <div className="flex gap-6">
+            <a href="#" className="hover:text-zinc-900 dark:hover:text-zinc-200">Privacy Policy</a>
+            <a href="#" className="hover:text-zinc-900 dark:hover:text-zinc-200">Terms of Service</a>
+          </div>
+        </div>
+      </footer>
+    </div>
   )
 }
