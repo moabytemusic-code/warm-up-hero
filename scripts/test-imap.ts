@@ -35,6 +35,7 @@ async function testImap() {
         console.log('\n📂 ALL MAILBOXES FOUND:');
 
         // Helper to print keys recursively
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const printBoxes = (boxList: any, indent = 0) => {
             for (const key in boxList) {
                 console.log(`${' '.repeat(indent)}- ${key}`);
@@ -55,6 +56,7 @@ async function testImap() {
         }
 
         if (!spamBoxPath) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const traverseBoxes = (boxList: any, parentPath: string = "") => {
                 if (spamBoxPath) return;
                 for (const key in boxList) {
@@ -94,6 +96,7 @@ async function testImap() {
             if (messages.length > 0) {
                 console.log(`\n🔥 SECRET HEADER FOUND in ${messages.length} email(s)!`);
                 messages.forEach((msg, idx) => {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const header = msg.parts.find((p: any) => p.which === 'HEADER');
                     const subject = header?.body?.subject?.[0] || '(No Subject)';
                     const from = header?.body?.from?.[0] || '(Unknown)';
@@ -110,8 +113,10 @@ async function testImap() {
 
         connection.end();
 
-    } catch (err: any) {
-        console.error('\n❌ ERROR:', err.message);
+    } catch (err: unknown) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const error = err as any;
+        console.error('\n❌ ERROR:', error.message);
     }
 }
 

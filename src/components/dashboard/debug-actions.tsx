@@ -20,7 +20,7 @@ export function DebugActions() {
             } else {
                 toast.info(data.message || 'No action taken.')
             }
-        } catch (e) {
+        } catch {
             toast.error('Failed to trigger warmup send')
         } finally {
             setSending(false)
@@ -37,7 +37,7 @@ export function DebugActions() {
             } else {
                 toast.info(data.message || 'No action taken.')
             }
-        } catch (e) {
+        } catch {
             toast.error('Failed to trigger inbox check')
         } finally {
             setChecking(false)

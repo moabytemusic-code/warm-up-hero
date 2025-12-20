@@ -53,3 +53,25 @@ When deployed to Vercel (or using a Cron scheduler):
     *   The dashboard shows mock data until you have sent at least 1 real warmup email. Use "Trigger Send Run" to kickstart it.
 *   **System not sending?**
     *   Ensure you have at least 2 accounts with status `active` in the database.
+
+## 7. Monetization & Billing
+WarmUpHero includes a tiered subscription system powered by Stripe.
+
+### Pricing Plans
+1.  **Free:** 1 Account, 5 emails/day.
+2.  **Starter ($29/mo):** 3 Accounts, 50 emails/day.
+3.  **Agency ($99/mo):** Unlimited Accounts, 200 emails/day.
+
+### Setup (Developer)
+1.  **Env Variables:** Ensure `.env.local` contains your Stripe keys:
+    ```bash
+    STRIPE_SECRET_KEY=sk_test_...
+    STRIPE_WEBHOOK_SECRET=whsec_...
+    STRIPE_PRICE_ID_STARTER=price_...
+    STRIPE_PRICE_ID_AGENCY=price_...
+    NEXT_PUBLIC_BASE_URL=http://localhost:3000 # or your production URL
+    ```
+2.  **Webhooks:**
+    *   **Local:** Use Stripe CLI to forward events: `stripe listen --forward-to localhost:3000/api/stripe/webhook`
+    *   **Production:** Add your production URL `https://your-domain.com/api/stripe/webhook` to the Stripe Dashboard > Developers > Webhooks.
+

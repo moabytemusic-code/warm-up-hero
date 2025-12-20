@@ -6,15 +6,15 @@ import { generateEmailContent } from '@/lib/openai';
 
 export const dynamic = 'force-dynamic'; // No caching
 
-export async function POST(req: Request) {
-    return handleSendRequest(req);
+export async function POST() {
+    return handleSendRequest();
 }
 
-export async function GET(req: Request) {
-    return handleSendRequest(req);
+export async function GET() {
+    return handleSendRequest();
 }
 
-async function handleSendRequest(req: Request) {
+async function handleSendRequest() {
     try {
         // 1. Fetch active accounts
         const { data: accounts, error } = await supabase
@@ -32,6 +32,23 @@ async function handleSendRequest(req: Request) {
 
         // 2. Iterate and Send (Simplified: Each account sends 1 email to a random peer)
         for (const sender of accounts) {
+            // --- CHECK DAILY LIMIT ---
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const { count: sentToday } = await supabase
+                .from('email_logs')
+                .select('*', { count: 'exact', head: true })
+                .eq('account_id', sender.id)
+                .eq('type', 'SENT')
+                .eq('status', 'SUCCESS')
+                .gte('timestamp', today.toISOString());
+
+            if ((sentToday || 0) >= sender.daily_limit) {
+                results.push({ sender: sender.email_address, status: 'Limit Reached' });
+                continue;
+            }
+
             // Select random receiver that is NOT the sender
             const peers = accounts.filter(a => a.id !== sender.id);
             if (peers.length === 0) continue;
@@ -73,19 +90,21 @@ async function handleSendRequest(req: Request) {
 
                 results.push({ sender: sender.email_address, receiver: receiver.email_address, status: 'sent' });
 
-            } catch (err: any) {
-                console.error(`Failed to send from ${sender.email_address}:`, err);
+            } catch (err: unknown) {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const error = err as any;
+                console.error(`Failed to send from ${sender.email_address}:`, error);
 
                 // Log failure
                 await supabase.from('email_logs').insert({
                     account_id: sender.id,
                     type: 'SENT',
                     status: 'FAILED',
-                    details: { error: err.message }
+                    details: { error: error.message }
                 });
 
                 // Update status if auth failed (simplified check)
-                if (err.responseCode === 535 || err.message?.includes('Invalid login')) {
+                if (error.responseCode === 535 || error.message?.includes('Invalid login')) {
                     await supabase.from('email_accounts').update({ status: 'ERROR_AUTH' }).eq('id', sender.id);
                 }
             }
@@ -93,7 +112,8 @@ async function handleSendRequest(req: Request) {
 
         return NextResponse.json({ success: true, results });
 
-    } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    } catch (error: unknown) {
+        const err = error as Error;
+        return NextResponse.json({ error: err.message }, { status: 500 });
     }
 }

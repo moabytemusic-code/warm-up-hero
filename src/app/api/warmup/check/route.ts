@@ -9,15 +9,15 @@ export const dynamic = 'force-dynamic';
 
 const SPAM_BOX_NAMES = ['spam', 'junk', 'bulk', 'junk e-mail', 'junk email'];
 
-export async function POST(req: Request) {
-    return handleCheckRequest(req);
+export async function POST() {
+    return handleCheckRequest();
 }
 
-export async function GET(req: Request) {
-    return handleCheckRequest(req);
+export async function GET() {
+    return handleCheckRequest();
 }
 
-async function handleCheckRequest(req: Request) {
+async function handleCheckRequest() {
     const results = [];
 
     try {
@@ -55,55 +55,7 @@ async function handleCheckRequest(req: Request) {
                 const boxes = await connection.getBoxes();
                 let spamBoxPath: string | null = null;
 
-                // Recursive function to find spam box path with correct delimiter
-                const searchCtx = { found: false, path: '' };
 
-                const traverseBoxes = (boxList: any, parentPath: string = "") => {
-                    if (searchCtx.found) return;
-
-                    for (const key in boxList) {
-                        const box = boxList[key];
-                        // Determine path (handling delimiters if we knew them, but ImapSimple usually returns nested structure)
-                        // However, opening a box requires the full path name.
-                        // Typical convention: "Parent/Child" or "Parent.Child"
-                        // We will construct path based on key, but we need the delimiter. 
-                        // Using the delimiter from the box attributes is best, but imap-simple structure is tricky.
-                        // Let's assume the delimiter is standard '/' or '.' or we just build it.
-                        // ACTUALLY: imap-simple doesn't easily expose the delimiter in getBoxes() result without parsing attributes.
-                        // Simplify: Check the key name against our list.
-
-                        const lowerKey = key.toLowerCase();
-                        let isSpam = SPAM_BOX_NAMES.includes(lowerKey);
-
-                        // Construct the path for this node.
-                        // Note: The Key in the object *is* the name of the segment.
-                        // The delimiter is specific to the server. 
-                        // Safe bet: [Gmail]/Spam is a known full path? No, [Gmail] is parent, Spam is child.
-
-                        let currentPath = parentPath ? `${parentPath}${box.delimiter}${key}` : key;
-                        // Since we don't have 'box.delimiter' easily here (it's in the attr usually), 
-                        // we'll try to infer or just use the box name if top level.
-                        // Let's rely on standard patterns.
-
-                        if (isSpam) {
-                            spamBoxPath = parentPath ? (parentPath + '/' + key) : key; // Try forward slash as generic guess if nested
-                            // Better: If it's nested like [Gmail], construct it.
-                            // Let's try to detect [Gmail] specifically.
-                            if (parentPath === '[Gmail]') {
-                                spamBoxPath = `[Gmail]/${key}`;
-                            } else {
-                                spamBoxPath = key; // Top level
-                            }
-                            searchCtx.found = true;
-                            return;
-                        }
-
-                        // Recurse
-                        if (box.children) {
-                            traverseBoxes(box.children, key);
-                        }
-                    }
-                };
 
                 // Manual checks for common providers to be safe (overriding generic search)
                 if (boxes['[Gmail]'] && boxes['[Gmail]'].children) {
@@ -153,10 +105,12 @@ async function handleCheckRequest(req: Request) {
                             await connection.addFlags(uid, ['\\Seen', '\\Flagged']);
 
                             // 2. Move to INBOX
-                            await connection.moveMessage(uid as any, 'INBOX');
+                            await connection.moveMessage(String(uid), 'INBOX');
 
                             // 3. Extract Info for Reply
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
                             const headerPart = message.parts.find((p: any) => p.which === 'HEADER');
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
                             const textPart = message.parts.find((p: any) => p.which === 'TEXT');
 
                             const from = headerPart?.body?.from?.[0]; // "Name <email>"
@@ -211,16 +165,17 @@ async function handleCheckRequest(req: Request) {
 
                 connection.end();
 
-            } catch (err: any) {
-                console.error(`Error checking ${account.email_address}:`, err);
-                results.push({ account: account.email_address, error: err.message });
+            } catch (err: unknown) {
+                const error = err as Error;
+                console.error(`Error checking ${account.email_address}:`, error);
+                results.push({ account: account.email_address, error: error.message });
                 if (connection) connection.end();
 
                 // 4. Error Handling
-                if (err.message && (err.message.includes('authentication') || err.message.includes('LogIn') || err.message.includes('NO'))) {
+                if (error.message && (error.message.includes('authentication') || error.message.includes('LogIn') || error.message.includes('NO'))) {
                     // "NO" response often implies auth fail or box not found, but let's be careful.
                     // Only update if strictly auth related usually.
-                    if (err.message.includes('auth') || err.message.includes('credentials')) {
+                    if (error.message.includes('auth') || error.message.includes('credentials')) {
                         await supabase.from('email_accounts').update({ status: 'ERROR_AUTH' }).eq('id', account.id);
                     }
                 }
@@ -229,7 +184,8 @@ async function handleCheckRequest(req: Request) {
 
         return NextResponse.json({ success: true, results });
 
-    } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    } catch (error: unknown) {
+        const err = error as Error;
+        return NextResponse.json({ error: err.message }, { status: 500 });
     }
 }

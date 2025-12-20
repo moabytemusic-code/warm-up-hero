@@ -52,6 +52,7 @@ export function ConnectAccountForm() {
     type FormValues = z.infer<typeof formSchema>
 
     const form = useForm<FormValues>({
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         resolver: zodResolver(formSchema) as any,
         defaultValues: {
             name: '',
@@ -121,7 +122,7 @@ export function ConnectAccountForm() {
             // Trigger "Verifying IMAP" after a short delay to simulate progress if it takes long
             const progressTimer = setTimeout(() => setStatusMessage('Verifying IMAP...'), 1500)
 
-            const result = await connectAccount(null as any, formData) // null for initial state
+            const result = await connectAccount({}, formData) // empty object for initial state
 
             clearTimeout(progressTimer)
 

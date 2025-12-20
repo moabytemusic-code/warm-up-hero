@@ -12,7 +12,7 @@ export interface ConnectAccountState {
 }
 
 export async function connectAccount(prevState: ConnectAccountState, formData: FormData): Promise<ConnectAccountState> {
-    const name = formData.get('name') as string;
+
     const email = formData.get('email') as string;
     const smtpHost = formData.get('smtpHost') as string;
     const smtpPort = parseInt(formData.get('smtpPort') as string);
@@ -65,9 +65,11 @@ export async function connectAccount(prevState: ConnectAccountState, formData: F
         // 3. Encrypt Password
         const { encryptedData, iv } = encrypt(password);
 
-        // 4. Get or Create User (MVP Hack: One user for now)
+        // 4. Get or Create User and Enforce Limits
         let userId;
-        const { data: users, error: fetchError } = await supabase.from('users').select('id').limit(1);
+        let subscriptionStatus = 'free';
+
+        const { data: users, error: fetchError } = await supabase.from('users').select('id, subscription_status').limit(1);
 
         if (fetchError) {
             console.error('Error fetching users:', fetchError);
@@ -76,10 +78,11 @@ export async function connectAccount(prevState: ConnectAccountState, formData: F
 
         if (users && users.length > 0) {
             userId = users[0].id;
+            subscriptionStatus = users[0].subscription_status || 'free';
         } else {
             const { data: newUser, error: createError } = await supabase.from('users').insert({
                 email: 'demo@warmuphero.com', // Default demo email
-                subscription_status: 'active'
+                subscription_status: 'free'
             }).select().single();
 
             if (createError) {
@@ -87,7 +90,35 @@ export async function connectAccount(prevState: ConnectAccountState, formData: F
                 throw new Error('Failed to create user account');
             }
             userId = newUser.id;
+            subscriptionStatus = 'free';
         }
+
+        // --- ENFORCE LIMITS ---
+        const { count: currentAccountCount } = await supabase
+            .from('email_accounts')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_id', userId);
+
+        const limits: Record<string, number> = {
+            'free': 1,
+            'starter': 3,
+            'agency': 9999
+        };
+
+        const limit = limits[subscriptionStatus] || 1;
+
+        if ((currentAccountCount || 0) >= limit) {
+            return { error: `Upgrade required. Your ${subscriptionStatus} plan is limited to ${limit} account(s).` };
+        }
+
+        // --- SET DAILY LIMIT BASED ON TIER ---
+        const dailyLimits: Record<string, number> = {
+            'free': 5,
+            'starter': 50,
+            'agency': 200
+        };
+        const dailyLimit = dailyLimits[subscriptionStatus] || 5;
+
 
         // 5. Save Account
         const { error: dbError } = await supabase.from('email_accounts').insert({
@@ -99,7 +130,7 @@ export async function connectAccount(prevState: ConnectAccountState, formData: F
             imap_port: imapPort,
             encrypted_password: encryptedData,
             iv: iv,
-            daily_limit: 50,
+            daily_limit: dailyLimit,
             current_warmup_score: 0
         });
 
@@ -110,10 +141,11 @@ export async function connectAccount(prevState: ConnectAccountState, formData: F
 
         return { success: true, message: 'Account connected successfully!' };
 
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error('Connection Error:', err);
+        const errorObject = err as Error;
         // Return a friendly error message
-        let msg = err.message || 'Failed to connect account';
+        let msg = errorObject.message || 'Failed to connect account';
         if (msg.includes('Invalid login')) {
             msg = 'Invalid email or password.';
             if (email.includes('gmail.com')) {
@@ -231,7 +263,7 @@ function maskEmail(email: string) {
 }
 
 function getMockDashboardStats(): DashboardStats {
-    const today = new Date();
+
     // Generate last 14 days
     const graphData = Array.from({ length: 14 }).map((_, i) => {
         const d = new Date();

@@ -1,10 +1,31 @@
 'use client'
 
 import React from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
+import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { Activity, ShieldCheck, Mail, ArrowUpRight, TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DashboardStats } from '@/app/actions';
+
+interface CustomTooltipProps {
+    active?: boolean;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    payload?: any[];
+    label?: string;
+}
+
+// Custom Tooltip for Line Chart
+const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
+    if (active && payload && payload.length) {
+        return (
+            <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-3 rounded-lg shadow-xl text-xs">
+                <p className="font-semibold mb-1">{label}</p>
+                <p className="text-blue-500">Sent: {payload[0].payload.sent}</p>
+                <p className="text-green-500">Inbox Rate: {payload[0].value}%</p>
+            </div>
+        );
+    }
+    return null;
+};
 
 interface OverviewProps {
     stats: DashboardStats;
@@ -20,20 +41,6 @@ export function DashboardOverview({ stats }: OverviewProps) {
     };
 
     const healthColor = getHealthColor(stats.healthScore);
-
-    // Custom Tooltip for Line Chart
-    const CustomTooltip = ({ active, payload, label }: any) => {
-        if (active && payload && payload.length) {
-            return (
-                <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-3 rounded-lg shadow-xl text-xs">
-                    <p className="font-semibold mb-1">{label}</p>
-                    <p className="text-blue-500">Sent: {payload[0].payload.sent}</p>
-                    <p className="text-green-500">Inbox Rate: {payload[0].value}%</p>
-                </div>
-            );
-        }
-        return null;
-    };
 
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">

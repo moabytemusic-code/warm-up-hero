@@ -1,7 +1,9 @@
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { Sparkles } from 'lucide-react'
 import { ConnectAccountForm } from '@/components/dashboard/connect-account-form'
 import { DashboardOverview } from '@/components/dashboard/overview'
-import { DebugActions } from '@/components/dashboard/debug-actions' // Import
-import { Toaster } from '@/components/ui/sonner'
+import { DebugActions } from '@/components/dashboard/debug-actions'
 import { getDashboardStats } from '@/app/actions'
 
 export const dynamic = 'force-dynamic';
@@ -21,8 +23,13 @@ export default async function Home() {
               Supercharge your email deliverability with AI-powered warmups.
             </p>
           </div>
-          <div className="text-sm text-zinc-400">
-            MVP Phase 1 & 2
+          <div className="flex items-center gap-4">
+            <Link href="/billing">
+              <Button variant="outline" className="border-orange-200 hover:bg-orange-50 text-orange-700">
+                <Sparkles className="w-4 h-4 mr-2" />
+                Upgrade Plan
+              </Button>
+            </Link>
           </div>
         </header>
 
@@ -43,7 +50,6 @@ export default async function Home() {
           </div>
         </section>
       </div>
-      <Toaster />
     </main>
   )
 }
