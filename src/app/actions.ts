@@ -4,6 +4,7 @@ import { createTransport } from 'nodemailer';
 import imaps from 'imap-simple';
 import { encrypt } from '@/utils/encryption';
 import { createClient } from '@/utils/supabase/server';
+import { supabase as supabaseAdmin } from '@/lib/supabase';
 
 export interface ConnectAccountState {
     message?: string;
@@ -79,19 +80,21 @@ export async function connectAccount(prevState: ConnectAccountState, formData: F
         // Check if user has a profile in 'users' table (created via trigger usually, or we create now)
         // For MVP, we'll assume triggers or manual check.
         // Let's safe-check and create if missing (although usually auth hooks do this)
-        const { data: userProfile, error: profileError } = await supabase.from('users').select('subscription_status').eq('id', userId).single();
+        // USE ADMIN CLIENT FOR DB OPERATIONS TO AVOID RLS ISSUES DURING SETUP
+        const { data: userProfile, error: profileError } = await supabaseAdmin.from('users').select('subscription_status').eq('id', userId).single();
 
         let subscriptionStatus = 'free';
 
         if (!userProfile) {
             // Create profile on the fly if missing (e.g. first login)
-            const { error: createError } = await supabase.from('users').insert({
+            const { error: createError } = await supabaseAdmin.from('users').insert({
                 id: userId,
                 email: authUser.email,
                 subscription_status: 'free'
             });
             if (createError && createError.code !== '23505') { // Ignore duplicate key error
                 console.error("Error creating user profile", createError);
+                throw new Error("Failed to initialize user profile.");
             }
         } else {
             subscriptionStatus = userProfile.subscription_status || 'free';
@@ -99,7 +102,7 @@ export async function connectAccount(prevState: ConnectAccountState, formData: F
 
 
         // --- ENFORCE LIMITS ---
-        const { count: currentAccountCount } = await supabase
+        const { count: currentAccountCount } = await supabaseAdmin
             .from('email_accounts')
             .select('*', { count: 'exact', head: true })
             .eq('user_id', userId);
@@ -126,7 +129,7 @@ export async function connectAccount(prevState: ConnectAccountState, formData: F
 
 
         // 5. Save Account
-        const { error: dbError } = await supabase.from('email_accounts').insert({
+        const { error: dbError } = await supabaseAdmin.from('email_accounts').insert({
             user_id: userId,
             email_address: email,
             smtp_host: smtpHost,
