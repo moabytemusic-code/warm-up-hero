@@ -141,15 +141,113 @@ export default async function LandingPage() {
           </div>
         </section>
 
-        {/* CTA Section */}
-        <section className="py-24 relative overflow-hidden">
-          <div className="max-w-5xl mx-auto px-6 text-center relative z-10">
-            <h2 className="text-4xl md:text-5xl font-bold text-zinc-900 dark:text-white mb-8">Ready to fix your email deliverability?</h2>
-            <Link href="/login">
-              <Button size="lg" className="h-16 px-10 text-xl rounded-full bg-gradient-to-r from-orange-500 to-red-600 text-white hover:opacity-90 transition-opacity shadow-2xl shadow-orange-500/30 border-none">
-                Get Started Now
-              </Button>
-            </Link>
+        {/* How it Works Section */}
+        <section id="how-it-works" className="py-24 relative overflow-hidden">
+          <div className="absolute inset-0 bg-zinc-50 dark:bg-zinc-900/50 -skew-y-3 transform origin-top-left scale-110 z-0" />
+          <div className="max-w-7xl mx-auto px-6 relative z-10">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold text-zinc-900 dark:text-white mb-4">How WarmUpHero Works</h2>
+              <p className="text-lg text-zinc-500 max-w-2xl mx-auto">Getting started is easy. We handle the heavy lifting while you focus on your business.</p>
+            </div>
+
+            <div className="grid md:grid-cols-4 gap-8">
+              {[
+                { step: "01", title: "Connect Account", desc: "Securely connect your email account via SMTP/IMAP. We support all major providers." },
+                { step: "02", title: "AI Warming", desc: "Our network begins sending unique, AI-generated emails to other high-reputation inboxes." },
+                { step: "03", title: "Engagement", desc: "Recipients (our network) open, reply, and mark your emails as important automatically." },
+                { step: "04", title: "Reputation Boost", desc: "Your sender score increases, and ISPs verify you as a trusted sender." }
+              ].map((item, i) => (
+                <div key={i} className="relative p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black shadow-sm">
+                  <div className="text-4xl font-bold text-zinc-100 dark:text-zinc-800 mb-4">{item.step}</div>
+                  <h3 className="text-xl font-semibold text-zinc-900 dark:text-white mb-2">{item.title}</h3>
+                  <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">{item.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Pricing Section */}
+        <section id="pricing" className="py-24">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold text-zinc-900 dark:text-white mb-4">Simple, transparent pricing</h2>
+              <p className="text-lg text-zinc-500 max-w-2xl mx-auto">Start for free, upgrade as you grow. No hidden fees.</p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+              {/* Free Tier */}
+              <div className="p-8 rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black relative">
+                <h3 className="text-lg font-medium text-zinc-900 dark:text-white mb-2">Free Starter</h3>
+                <div className="text-4xl font-bold text-zinc-900 dark:text-white mb-6">$0</div>
+                <p className="text-zinc-500 text-sm mb-6">Perfect for testing the waters.</p>
+                <ul className="space-y-3 mb-8">
+                  <li className="flex items-center text-sm text-zinc-600 dark:text-zinc-300">
+                    <CheckCircle2 className="w-4 h-4 text-orange-500 mr-2" /> 1 Email Account
+                  </li>
+                  <li className="flex items-center text-sm text-zinc-600 dark:text-zinc-300">
+                    <CheckCircle2 className="w-4 h-4 text-orange-500 mr-2" /> 50 Warmup Emails/day
+                  </li>
+                  <li className="flex items-center text-sm text-zinc-600 dark:text-zinc-300">
+                    <CheckCircle2 className="w-4 h-4 text-orange-500 mr-2" /> Basic Reporting
+                  </li>
+                </ul>
+                <Link href="/login">
+                  <Button variant="outline" className="w-full rounded-xl">Get Started</Button>
+                </Link>
+              </div>
+
+              {/* Pro Tier */}
+              <div className="p-8 rounded-3xl border-2 border-orange-500 bg-white dark:bg-black relative shadow-2xl shadow-orange-500/10 transform md:-translate-y-4">
+                <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 bg-gradient-to-r from-orange-500 to-red-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                  Popular
+                </div>
+                <h3 className="text-lg font-medium text-zinc-900 dark:text-white mb-2">Pro Growth</h3>
+                <div className="text-4xl font-bold text-zinc-900 dark:text-white mb-6">$29<span className="text-lg font-normal text-zinc-400">/mo</span></div>
+                <p className="text-zinc-500 text-sm mb-6">For professionals and small teams.</p>
+                <ul className="space-y-3 mb-8">
+                  <li className="flex items-center text-sm text-zinc-600 dark:text-zinc-300">
+                    <CheckCircle2 className="w-4 h-4 text-orange-500 mr-2" /> 3 Email Accounts
+                  </li>
+                  <li className="flex items-center text-sm text-zinc-600 dark:text-zinc-300">
+                    <CheckCircle2 className="w-4 h-4 text-orange-500 mr-2" /> 200 Warmup Emails/day
+                  </li>
+                  <li className="flex items-center text-sm text-zinc-600 dark:text-zinc-300">
+                    <CheckCircle2 className="w-4 h-4 text-orange-500 mr-2" /> Priority Spam Rescue
+                  </li>
+                  <li className="flex items-center text-sm text-zinc-600 dark:text-zinc-300">
+                    <CheckCircle2 className="w-4 h-4 text-orange-500 mr-2" /> Advanced Analytics
+                  </li>
+                </ul>
+                <Link href="/login">
+                  <Button className="w-full rounded-xl bg-orange-600 hover:bg-orange-700 text-white border-none">Get Started</Button>
+                </Link>
+              </div>
+
+              {/* Agency Tier */}
+              <div className="p-8 rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black relative">
+                <h3 className="text-lg font-medium text-zinc-900 dark:text-white mb-2">Agency</h3>
+                <div className="text-4xl font-bold text-zinc-900 dark:text-white mb-6">$79<span className="text-lg font-normal text-zinc-400">/mo</span></div>
+                <p className="text-zinc-500 text-sm mb-6">Volume and power for agencies.</p>
+                <ul className="space-y-3 mb-8">
+                  <li className="flex items-center text-sm text-zinc-600 dark:text-zinc-300">
+                    <CheckCircle2 className="w-4 h-4 text-orange-500 mr-2" /> Unlimited Accounts
+                  </li>
+                  <li className="flex items-center text-sm text-zinc-600 dark:text-zinc-300">
+                    <CheckCircle2 className="w-4 h-4 text-orange-500 mr-2" /> 1000+ Warmup Emails/day
+                  </li>
+                  <li className="flex items-center text-sm text-zinc-600 dark:text-zinc-300">
+                    <CheckCircle2 className="w-4 h-4 text-orange-500 mr-2" /> Dedicated Support
+                  </li>
+                  <li className="flex items-center text-sm text-zinc-600 dark:text-zinc-300">
+                    <CheckCircle2 className="w-4 h-4 text-orange-500 mr-2" /> API Access
+                  </li>
+                </ul>
+                <Link href="/login">
+                  <Button variant="outline" className="w-full rounded-xl">Contact Sales</Button>
+                </Link>
+              </div>
+            </div>
           </div>
         </section>
 
