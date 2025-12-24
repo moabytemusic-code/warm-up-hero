@@ -14,22 +14,33 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { signOut } from '@/app/auth/actions'
 
-export function UserNav() {
+interface UserNavProps {
+    email: string;
+}
+
+export function UserNav({ email }: UserNavProps) {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <div className="w-8 h-8 rounded-full bg-zinc-200 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 overflow-hidden ring-2 ring-transparent hover:ring-orange-500/20 transition-all cursor-pointer">
-                    <img
-                        src={`https://api.dicebear.com/7.x/notionists/svg?seed=KD`}
-                        alt="User"
-                        className="w-full h-full"
-                    />
+                <div className="flex items-center gap-3 cursor-pointer group">
+                    <div className="hidden md:flex flex-col items-end">
+                        <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100 group-hover:text-amber-600 transition-colors">
+                            {email}
+                        </span>
+                    </div>
+                    <div className="w-9 h-9 rounded-full bg-zinc-200 dark:bg-zinc-800 border-2 border-transparent group-hover:border-amber-500/20 overflow-hidden transition-all">
+                        <img
+                            src={`https://api.dicebear.com/7.x/notionists/svg?seed=${email}`}
+                            alt="User"
+                            className="w-full h-full bg-white dark:bg-black"
+                        />
+                    </div>
                 </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none text-zinc-900 dark:text-zinc-100">User Account</p>
+                        <p className="text-sm font-medium leading-none text-zinc-900 dark:text-zinc-100">{email}</p>
                         <p className="text-xs leading-none text-zinc-500 dark:text-zinc-400">
                             WarmUp Network Member
                         </p>

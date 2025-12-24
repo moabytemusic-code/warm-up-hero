@@ -8,13 +8,16 @@ import { AccountList } from '@/components/dashboard/account-list'
 import { HowItWorks } from '@/components/dashboard/how-it-works'
 import { UserNav } from '@/components/dashboard/user-nav'
 import { getDashboardStats, getConnectedAccounts } from '@/app/actions'
+import { createClient } from '@/utils/supabase/server'
 
 export const dynamic = 'force-dynamic';
 
 export default async function Dashboard() {
-    const [stats, accounts] = await Promise.all([
+    const supabase = await createClient();
+    const [stats, accounts, { data: { user } }] = await Promise.all([
         getDashboardStats(),
-        getConnectedAccounts()
+        getConnectedAccounts(),
+        supabase.auth.getUser()
     ]);
 
     const hasAccounts = accounts.length > 0;
@@ -94,7 +97,7 @@ export default async function Dashboard() {
                                 Upgrade Plan
                             </Button>
                         </Link>
-                        <UserNav />
+                        <UserNav email={user?.email || 'User'} />
                     </div>
                 </div>
             </nav>
