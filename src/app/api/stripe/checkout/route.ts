@@ -16,15 +16,27 @@ export async function POST(req: Request) {
             : process.env.STRIPE_PRICE_ID_AGENCY;
 
         if (!priceId) {
-            return NextResponse.json({ error: 'Price ID not configured in environment' }, { status: 500 });
+            console.error('Missing Price ID for plan:', plan);
+            return NextResponse.json({
+                error: 'Billing configuration missing. Please report this to support.'
+            }, { status: 500 });
         }
 
         // Fetch user email for pre-fill
         const { data: user } = await supabase.from('users').select('email').eq('id', userId).single();
 
-        let baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+        // Robust Base URL for Production
+        let baseUrl = process.env.NEXT_PUBLIC_SITE_URL
+            || process.env.VERCEL_URL
+            || 'http://localhost:3000';
+
         if (!baseUrl.startsWith('http')) {
-            baseUrl = `http://${baseUrl}`;
+            baseUrl = `https://${baseUrl}`; // Vercel URLs don't have protocol
+        }
+
+        // Localhost fallback
+        if (baseUrl.includes('localhost')) {
+            baseUrl = 'http://localhost:3000';
         }
 
         const session = await stripe.checkout.sessions.create({
