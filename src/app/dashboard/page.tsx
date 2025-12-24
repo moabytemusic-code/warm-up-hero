@@ -6,6 +6,7 @@ import { DashboardOverview } from '@/components/dashboard/overview'
 import { DebugActions } from '@/components/dashboard/debug-actions'
 import { AccountList } from '@/components/dashboard/account-list'
 import { HowItWorks } from '@/components/dashboard/how-it-works'
+import { UserNav } from '@/components/dashboard/user-nav'
 import { getDashboardStats, getConnectedAccounts } from '@/app/actions'
 
 export const dynamic = 'force-dynamic';
@@ -43,9 +44,7 @@ export default async function Dashboard() {
                                 Upgrade Plan
                             </Button>
                         </Link>
-                        <div className="w-8 h-8 rounded-full bg-zinc-200 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 overflow-hidden ring-2 ring-transparent hover:ring-orange-500/20 transition-all cursor-pointer">
-                            <img src={`https://api.dicebear.com/7.x/notionists/svg?seed=KD`} alt="User" className="w-full h-full" />
-                        </div>
+                        <UserNav />
                     </div>
                 </div>
             </nav>

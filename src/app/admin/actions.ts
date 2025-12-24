@@ -26,7 +26,7 @@ export async function authorizeAdmin() {
     }
 
     // TODO: Replace with your actual admin email(s) or a role check
-    const ALLOWED_ADMINS = ['kentjigga@gmail.com', 'ken_davis@msn,com'] // Add your email here to test
+    const ALLOWED_ADMINS = ['kentjigga@gmail.com', 'ken_davis@msn.com'] // Add your email here to test
 
     // Check if email is allowed OR if they have a specific flag in public.users
     if (ALLOWED_ADMINS.includes(user.email || '')) {
@@ -37,7 +37,7 @@ export async function authorizeAdmin() {
     // const { data: profile } = await supabase.from('users').select('role').eq('id', user.id).single()
     // return profile?.role === 'admin'
 
-    return true // TEMPORARY: Allow all logged in users for the demo. PLEASE CHANGE THIS BEFORE PROD.
+    return false
 }
 
 export async function getAdminStats(): Promise<AdminStats> {

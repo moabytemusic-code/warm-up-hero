@@ -132,41 +132,43 @@ export function DashboardOverview({ stats }: OverviewProps) {
                         <CardTitle>Reputation History</CardTitle>
                         <p className="text-sm text-zinc-500">Inbox placement rate over the last 14 days.</p>
                     </CardHeader>
-                    <CardContent className="h-[320px]">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={stats.graphData}>
-                                <defs>
-                                    <linearGradient id="colorInbox" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#22c55e" stopOpacity={0.2} />
-                                        <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
-                                    </linearGradient>
-                                </defs>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E4E4E7" />
-                                <XAxis
-                                    dataKey="date"
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fontSize: 12, fill: '#71717A' }}
-                                    dy={10}
-                                />
-                                <YAxis
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fontSize: 12, fill: '#71717A' }}
-                                    domain={[0, 100]}
-                                    unit="%"
-                                />
-                                <Tooltip content={<CustomTooltip />} />
-                                <Area
-                                    type="monotone"
-                                    dataKey="inboxRate"
-                                    stroke="#22c55e"
-                                    strokeWidth={3}
-                                    fillOpacity={1}
-                                    fill="url(#colorInbox)"
-                                />
-                            </AreaChart>
-                        </ResponsiveContainer>
+                    <CardContent>
+                        <div className="h-[320px] w-full">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <AreaChart data={stats.graphData}>
+                                    <defs>
+                                        <linearGradient id="colorInbox" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="#22c55e" stopOpacity={0.2} />
+                                            <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
+                                        </linearGradient>
+                                    </defs>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E4E4E7" />
+                                    <XAxis
+                                        dataKey="date"
+                                        axisLine={false}
+                                        tickLine={false}
+                                        tick={{ fontSize: 12, fill: '#71717A' }}
+                                        dy={10}
+                                    />
+                                    <YAxis
+                                        axisLine={false}
+                                        tickLine={false}
+                                        tick={{ fontSize: 12, fill: '#71717A' }}
+                                        domain={[0, 100]}
+                                        unit="%"
+                                    />
+                                    <Tooltip content={<CustomTooltip />} />
+                                    <Area
+                                        type="monotone"
+                                        dataKey="inboxRate"
+                                        stroke="#22c55e"
+                                        strokeWidth={3}
+                                        fillOpacity={1}
+                                        fill="url(#colorInbox)"
+                                    />
+                                </AreaChart>
+                            </ResponsiveContainer>
+                        </div>
                     </CardContent>
                 </Card>
 
