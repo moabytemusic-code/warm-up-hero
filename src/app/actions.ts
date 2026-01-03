@@ -16,12 +16,12 @@ export async function connectAccount(prevState: ConnectAccountState, formData: F
 
     const supabase = await createClient();
 
-    const email = formData.get('email') as string;
-    const smtpHost = formData.get('smtpHost') as string;
+    const email = (formData.get('email') as string)?.trim();
+    const smtpHost = (formData.get('smtpHost') as string)?.trim();
     const smtpPort = parseInt(formData.get('smtpPort') as string);
-    const imapHost = formData.get('imapHost') as string;
+    const imapHost = (formData.get('imapHost') as string)?.trim();
     const imapPort = parseInt(formData.get('imapPort') as string);
-    const password = formData.get('password') as string;
+    const password = (formData.get('password') as string)?.trim();
 
     if (!email || !password || !smtpHost || !imapHost) {
         return { error: 'Missing required fields' };

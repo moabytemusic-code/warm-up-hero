@@ -73,7 +73,7 @@ const PROVIDERS: Record<ProviderId, {
     'custom': {
         name: 'Other Provider',
         icon: <ShieldCheck className="w-6 h-6" />,
-        color: 'from-zinc-400 to-zinc-600',
+        color: 'from-zinc-800 to-zinc-950',
         passwordLabel: 'Password',
         helperText: 'Enter your provider\'s IMAP/SMTP details manually.'
     }
@@ -415,7 +415,7 @@ export function ConnectAccountForm() {
                     )}
 
                     {/* Submit */}
-                    <Button type="submit" className={cn("w-full transition-all duration-300", currentProvider.color.replace('from-', 'bg-').replace('to-', 'hover:bg-'))} disabled={status === 'loading'}>
+                    <Button type="submit" className={cn("w-full transition-all duration-300 text-white shadow-md", currentProvider.color.replace('from-', 'bg-').replace('to-', 'hover:bg-'))} disabled={status === 'loading'}>
                         {status === 'loading' ? (
                             <>
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
