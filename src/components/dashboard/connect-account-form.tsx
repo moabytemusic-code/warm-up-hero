@@ -415,16 +415,18 @@ export function ConnectAccountForm() {
                     )}
 
                     {/* Submit */}
-                    <Button type="submit" className={cn("w-full transition-all duration-300 text-white shadow-md", currentProvider.color.replace('from-', 'bg-').replace('to-', 'hover:bg-'))} disabled={status === 'loading'}>
-                        {status === 'loading' ? (
-                            <>
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                {statusMessage}
-                            </>
-                        ) : (
-                            `Connect ${currentProvider.name}`
-                        )}
-                    </Button>
+                    <div className="pt-4  pb-2">
+                        <Button type="submit" className="w-full transition-all duration-300 shadow-md bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200" disabled={status === 'loading'}>
+                            {status === 'loading' ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    {statusMessage}
+                                </>
+                            ) : (
+                                `Connect ${currentProvider.name}`
+                            )}
+                        </Button>
+                    </div>
 
                 </form>
             </Form>
