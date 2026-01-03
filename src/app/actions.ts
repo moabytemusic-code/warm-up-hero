@@ -40,6 +40,9 @@ export async function connectAccount(prevState: ConnectAccountState, formData: F
                 user: email,
                 pass: password,
             },
+            tls: {
+                rejectUnauthorized: false
+            }
         });
 
         console.log('Verifying SMTP connection...');
