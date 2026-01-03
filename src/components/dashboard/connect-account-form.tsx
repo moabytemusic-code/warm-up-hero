@@ -360,7 +360,7 @@ export function ConnectAccountForm() {
                                                 <FormItem>
                                                     <FormLabel className="text-xs">Port</FormLabel>
                                                     <FormControl>
-                                                        <Input className="h-8 text-xs font-mono" type="number" {...field} />
+                                                        <Input className="h-8 text-xs font-mono" inputMode="numeric" pattern="[0-9]*" {...field} />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>
@@ -391,7 +391,7 @@ export function ConnectAccountForm() {
                                                 <FormItem>
                                                     <FormLabel className="text-xs">Port</FormLabel>
                                                     <FormControl>
-                                                        <Input className="h-8 text-xs font-mono" type="number" {...field} />
+                                                        <Input className="h-8 text-xs font-mono" inputMode="numeric" pattern="[0-9]*" {...field} />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>
