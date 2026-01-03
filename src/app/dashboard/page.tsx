@@ -128,7 +128,7 @@ export default async function Dashboard() {
                     </div>
 
                     {/* Right Col: Connect Form */}
-                    <div className="space-y-6 sticky top-24">
+                    <div className="space-y-6">
                         <div className="flex items-center justify-between px-1">
                             <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100 tracking-tight">
                                 Add Another Account
