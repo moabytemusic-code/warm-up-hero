@@ -206,7 +206,7 @@ export function ConnectAccountForm() {
                 {/* Security Note */}
                 <Collapsible className="border border-zinc-200 dark:border-zinc-800 rounded-lg bg-zinc-50/50 dark:bg-zinc-900/30">
                     <CollapsibleTrigger asChild>
-                        <Button variant="ghost" size="sm" className="w-full flex items-center justify-between p-3 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 h-auto">
+                        <Button type="button" variant="ghost" size="sm" className="w-full flex items-center justify-between p-3 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 h-auto">
                             <span className="flex items-center gap-2 text-xs font-medium">
                                 <ShieldCheck className="w-4 h-4 text-green-600 dark:text-green-500" />
                                 Is my account safe?
@@ -236,6 +236,7 @@ export function ConnectAccountForm() {
     return (
         <div className="w-full">
             <button
+                type="button"
                 onClick={() => setSelectedProvider(null)}
                 className="mb-6 flex items-center text-xs font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300 transition-colors"
             >
@@ -329,7 +330,7 @@ export function ConnectAccountForm() {
                                 Advanced Server Settings
                             </h4>
                             <CollapsibleTrigger asChild>
-                                <Button variant="ghost" size="sm" className="w-8 h-8 p-0 hover:bg-zinc-200/50">
+                                <Button type="button" variant="ghost" size="sm" className="w-8 h-8 p-0 hover:bg-zinc-200/50">
                                     {advancedOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                                 </Button>
                             </CollapsibleTrigger>
