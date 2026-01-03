@@ -1,16 +1,39 @@
 'use client'
 
-import React from 'react';
+import React, { useTransition } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Mail, Zap, MoreHorizontal } from 'lucide-react';
+import { Mail, Zap, MoreHorizontal, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { EmailAccount } from '@/app/actions';
+import { EmailAccount, deleteAccount } from '@/app/actions';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { toast } from 'sonner';
 
 interface AccountListProps {
     accounts: EmailAccount[];
 }
 
 export function AccountList({ accounts }: AccountListProps) {
+    const [isPending, startTransition] = useTransition();
+
+    const handleDelete = (id: string, email: string) => {
+        if (!confirm(`Are you sure you want to disconnect ${email}?`)) return;
+
+        startTransition(async () => {
+            try {
+                await deleteAccount(id);
+                toast.success('Account disconnected');
+            } catch (error) {
+                toast.error('Failed to disconnect account');
+                console.error(error);
+            }
+        });
+    };
+
     if (accounts.length === 0) return null;
 
     return (
@@ -49,9 +72,23 @@ export function AccountList({ accounts }: AccountListProps) {
                                     Active
                                 </div>
 
-                                <Button variant="ghost" size="icon" className="opacity-0 group-hover:opacity-100 transition-opacity text-zinc-400 hover:text-zinc-600">
-                                    <MoreHorizontal className="h-4 w-4" />
-                                </Button>
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant="ghost" size="icon" className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300">
+                                            <MoreHorizontal className="h-4 w-4" />
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                        <DropdownMenuItem
+                                            className="text-red-600 cursor-pointer focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-900/10"
+                                            onClick={() => handleDelete(account.id, account.email_address)}
+                                            disabled={isPending}
+                                        >
+                                            <Trash2 className="w-4 h-4 mr-2" />
+                                            Disconnect Account
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
                             </div>
                         </div>
                     ))}

@@ -170,7 +170,7 @@ export function ConnectAccountForm() {
                 </div>
                 <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 mb-2">Connected!</h3>
                 <p className="text-zinc-500 mb-6">Your account has been added to the network.</p>
-                <Button variant="outline" onClick={() => { setStatus('idle'); setSelectedProvider(null); }}>
+                <Button onClick={() => { setStatus('idle'); setSelectedProvider(null); }}>
                     Add Another Account
                 </Button>
             </div>

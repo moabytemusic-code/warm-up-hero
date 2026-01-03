@@ -5,6 +5,7 @@ import imaps from 'imap-simple';
 import { encrypt } from '@/utils/encryption';
 import { createClient } from '@/utils/supabase/server';
 import { supabase as supabaseAdmin } from '@/lib/supabase';
+import { revalidatePath } from 'next/cache';
 
 export interface ConnectAccountState {
     message?: string;
@@ -150,6 +151,7 @@ export async function connectAccount(prevState: ConnectAccountState, formData: F
             throw new Error(dbError.message);
         }
 
+        revalidatePath('/dashboard');
         return { success: true, message: 'Account connected successfully!' };
 
     } catch (err: unknown) {
@@ -166,6 +168,17 @@ export async function connectAccount(prevState: ConnectAccountState, formData: F
         if (msg.includes('ENOTFOUND')) msg = 'Host not found. Check your SMTP/IMAP server details.';
         return { error: msg };
     }
+}
+
+export async function deleteAccount(accountId: string) {
+    const supabase = await createClient();
+    const { error } = await supabase.from('email_accounts').delete().eq('id', accountId);
+
+    if (error) {
+        console.error('Delete Account Error:', error);
+        throw new Error('Failed to delete account');
+    }
+    revalidatePath('/dashboard');
 }
 
 export interface DashboardStats {
