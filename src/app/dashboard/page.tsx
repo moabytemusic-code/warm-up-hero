@@ -54,7 +54,7 @@ export default async function Dashboard() {
                     </div>
 
                     <div className="w-full max-w-md animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
-                        <div className="glass rounded-xl shadow-2xl shadow-orange-500/5 overflow-hidden border border-white/20 dark:border-white/10">
+                        <div className="glass rounded-xl shadow-2xl shadow-orange-500/5 border border-white/20 dark:border-white/10">
                             <div className="h-1 w-full bg-gradient-to-r from-orange-400 to-red-500" />
                             <div className="p-6 md:p-8 bg-white/50 dark:bg-black/40 backdrop-blur-xl">
                                 <ConnectAccountForm />
@@ -134,7 +134,7 @@ export default async function Dashboard() {
                                 Add Another Account
                             </h2>
                         </div>
-                        <div className="glass rounded-xl shadow-xl shadow-black/5 overflow-hidden">
+                        <div className="glass rounded-xl shadow-xl shadow-black/5">
                             {/* Decorative top strip */}
                             <div className="h-1 w-full bg-gradient-to-r from-orange-400 to-red-500" />
                             <div className="p-6">
