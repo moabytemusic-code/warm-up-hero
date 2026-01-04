@@ -1,30 +1,51 @@
 'use client'
 
 import { createClient } from '@/utils/supabase/client'
-import { Auth } from '@supabase/auth-ui-react'
-import { ThemeSupa } from '@supabase/auth-ui-shared'
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { useTheme } from 'next-themes'
-import { Loader2 } from 'lucide-react'
+import { Loader2, AlertCircle } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import Link from 'next/link'
 
 export function LoginForm() {
     const supabase = createClient()
     const router = useRouter()
-    const { theme } = useTheme()
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState<string | null>(null)
     const [mounted, setMounted] = useState(false)
 
     useEffect(() => {
         setMounted(true)
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-            if (event === 'SIGNED_IN' && session) {
-                router.replace('/dashboard')
-                router.refresh() // Force server re-check/data fetch
-            }
-        })
+    }, [])
 
-        return () => subscription.unsubscribe()
-    }, [router, supabase])
+    const handleLogin = async (e: React.FormEvent) => {
+        e.preventDefault()
+        setLoading(true)
+        setError(null)
+
+        try {
+            const { error } = await supabase.auth.signInWithPassword({
+                email,
+                password
+            })
+
+            if (error) {
+                setError(error.message)
+                setLoading(false)
+            } else {
+                router.replace('/dashboard')
+                router.refresh()
+            }
+        } catch (err) {
+            setError('An unexpected error occurred. Please try again.')
+            setLoading(false)
+        }
+    }
 
     if (!mounted) return null
 
@@ -45,28 +66,54 @@ export function LoginForm() {
             </div>
 
             <div className="bg-white/70 dark:bg-black/40 backdrop-blur-xl p-8 rounded-xl shadow-xl shadow-black/5 border border-white/20 dark:border-white/10">
-                <Auth
-                    supabaseClient={supabase}
-                    appearance={{
-                        theme: ThemeSupa,
-                        variables: {
-                            default: {
-                                colors: {
-                                    brand: '#f97316', // Orange-500
-                                    brandAccent: '#ea580c', // Orange-600
-                                },
-                            },
-                        },
-                        className: {
-                            button: 'bg-orange-500 hover:bg-orange-600 border-none text-white',
-                            input: 'bg-white dark:bg-black border-zinc-200 dark:border-zinc-800 focus:border-orange-500',
-                            container: 'gap-4'
-                        }
-                    }}
-                    providers={[]}
-                    redirectTo={`${typeof window !== 'undefined' ? window.location.origin : ''}/auth/callback`}
-                    theme={theme === 'dark' ? 'dark' : 'default'}
-                />
+                <form onSubmit={handleLogin} className="space-y-4">
+                    {error && (
+                        <Alert variant="destructive">
+                            <AlertCircle className="h-4 w-4" />
+                            <AlertTitle>Error</AlertTitle>
+                            <AlertDescription>{error}</AlertDescription>
+                        </Alert>
+                    )}
+
+                    <div className="space-y-2">
+                        <Label htmlFor="email">Email address</Label>
+                        <Input
+                            id="email"
+                            type="email"
+                            placeholder="you@example.com"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                            className="bg-zinc-50 dark:bg-zinc-950"
+                        />
+                    </div>
+
+                    <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                            <Label htmlFor="password">Password</Label>
+                            <Link
+                                href="/auth/reset-password"
+                                className="text-xs font-medium text-orange-600 hover:text-orange-500 dark:text-orange-400"
+                            >
+                                Forgot password?
+                            </Link>
+                        </div>
+                        <Input
+                            id="password"
+                            type="password"
+                            placeholder="••••••••"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                            className="bg-zinc-50 dark:bg-zinc-950"
+                        />
+                    </div>
+
+                    <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600 text-white" disabled={loading}>
+                        {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                        Sign in
+                    </Button>
+                </form>
             </div>
         </div>
     )
