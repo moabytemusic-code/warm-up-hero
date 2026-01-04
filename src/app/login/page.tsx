@@ -3,9 +3,45 @@
 import { createClient } from '@/utils/supabase/client'
 import { Auth } from '@supabase/auth-ui-react'
 import { ThemeSupa } from '@supabase/auth-ui-shared'
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useTheme } from 'next-themes'
+import { Loader2 } from 'lucide-react'
 
 export default function Login() {
     const supabase = createClient()
+    const router = useRouter()
+    const { theme } = useTheme()
+    const [checking, setChecking] = useState(true)
+
+    useEffect(() => {
+        const checkSession = async () => {
+            const { data: { session } } = await supabase.auth.getSession()
+            if (session) {
+                router.replace('/dashboard')
+            } else {
+                setChecking(false)
+            }
+        }
+
+        checkSession()
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN' && session) {
+                router.replace('/dashboard')
+            }
+        })
+
+        return () => subscription.unsubscribe()
+    }, [router, supabase])
+
+    if (checking) {
+        return (
+            <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-black">
+                <Loader2 className="w-8 h-8 animate-spin text-orange-500" />
+            </div>
+        )
+    }
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-black p-4 bg-grid-pattern">
@@ -48,7 +84,7 @@ export default function Login() {
                         }}
                         providers={[]}
                         redirectTo={`${typeof window !== 'undefined' ? window.location.origin : ''}/auth/callback`}
-                        theme="dark" // or light based on context, forcing dark for now as simpler
+                        theme={theme === 'dark' ? 'dark' : 'default'}
                     />
                 </div>
             </div>
