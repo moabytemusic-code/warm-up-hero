@@ -45,29 +45,29 @@ export function DebugActions() {
     }
 
     return (
-        <Card className="border-dashed border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900/50">
-            <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold uppercase tracking-wider text-zinc-500">
-                    Engine Controls (Dev Mode)
+        <Card className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 shadow-sm">
+            <CardHeader className="pb-3 flex flex-row items-center justify-between">
+                <CardTitle className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                    Warmup Engine Controls
                 </CardTitle>
             </CardHeader>
-            <CardContent className="flex gap-4">
+            <CardContent className="flex flex-col sm:flex-row gap-4">
                 <Button
-                    variant="outline"
                     onClick={triggerSend}
                     disabled={sending}
-                    className="w-full sm:w-auto"
+                    className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white"
                 >
-                    {sending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Play className="w-4 h-4 mr-2 text-blue-500" />}
+                    {sending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Play className="w-4 h-4 mr-2" />}
                     Trigger Send Run
                 </Button>
                 <Button
-                    variant="outline"
+                    variant="secondary"
                     onClick={triggerCheck}
                     disabled={checking}
                     className="w-full sm:w-auto"
                 >
-                    {checking ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Inbox className="w-4 h-4 mr-2 text-orange-500" />}
+                    {checking ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Inbox className="w-4 h-4 mr-2" />}
                     Trigger Inbox Check
                 </Button>
             </CardContent>

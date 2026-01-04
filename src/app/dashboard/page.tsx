@@ -115,6 +115,11 @@ export default async function Dashboard() {
                     <DashboardOverview stats={stats} />
                 </section>
 
+                {/* Developer Tools (Visible for easy testing) */}
+                <section>
+                    <DebugActions />
+                </section>
+
                 {/* Accounts Section */}
                 <section className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
 
@@ -142,15 +147,7 @@ export default async function Dashboard() {
                             </div>
                         </div>
 
-                        {/* Debug Actions (Hidden behind details for cleanliness) */}
-                        <details className="group">
-                            <summary className="flex items-center gap-2 cursor-pointer text-xs font-medium text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 select-none transition-colors px-1">
-                                <span>Developer Tools</span>
-                            </summary>
-                            <div className="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-800 animate-in fade-in slide-in-from-top-2">
-                                <DebugActions />
-                            </div>
-                        </details>
+
                     </div>
 
                 </section>
