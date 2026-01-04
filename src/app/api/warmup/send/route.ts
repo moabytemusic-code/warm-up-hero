@@ -85,6 +85,9 @@ async function handleSendRequest() {
                             user: sender.email_address,
                             pass: decryptedPassword,
                         },
+                        tls: {
+                            rejectUnauthorized: false
+                        }
                     });
 
                     const { subject, body } = await generateEmailContent();
