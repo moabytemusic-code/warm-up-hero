@@ -132,6 +132,9 @@ async function handleCheckRequest() {
                                         user: account.email_address,
                                         pass: decryptedPassword,
                                     },
+                                    tls: {
+                                        rejectUnauthorized: false
+                                    }
                                 });
 
                                 await transporter.sendMail({
