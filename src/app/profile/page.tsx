@@ -4,6 +4,7 @@ import Link from "next/link"
 import { ArrowLeft, User, Mail, Calendar, CreditCard } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { SettingsForm } from "@/components/profile/settings-form"
 
 export default async function ProfilePage() {
     const supabase = await createClient()
@@ -115,6 +116,8 @@ export default async function ProfilePage() {
 
                     </CardContent>
                 </Card>
+
+                <SettingsForm />
 
             </div>
         </main>

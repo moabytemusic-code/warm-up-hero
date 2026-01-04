@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Sparkles, PlusCircle } from 'lucide-react'
+import { Sparkles, PlusCircle, LogOut } from 'lucide-react'
+import { signOut } from '@/app/auth/actions'
 import { ConnectAccountForm } from '@/components/dashboard/connect-account-form'
 import { DashboardOverview } from '@/components/dashboard/overview'
 import { DebugActions } from '@/components/dashboard/debug-actions'
@@ -97,6 +98,12 @@ export default async function Dashboard() {
                                 Upgrade Plan
                             </Button>
                         </Link>
+                        <form action={signOut}>
+                            <Button variant="ghost" size="sm" className="hidden md:flex text-zinc-500 hover:text-red-600 dark:hover:text-red-400">
+                                <LogOut className="w-4 h-4 mr-2" />
+                                Exit
+                            </Button>
+                        </form>
                         <UserNav email={user?.email || 'User'} />
                     </div>
                 </div>
